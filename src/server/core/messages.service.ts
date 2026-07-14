@@ -1,4 +1,4 @@
-import type { Conversation, Message } from '../../shared/types'
+import type { Conversation, Message, Page } from '../../shared/types'
 import { messagesRepo, type MessageRow } from '../db/messages.repo'
 
 function toMessage(row: MessageRow, myNumber: string): Message {
@@ -17,17 +17,27 @@ export const messagesService = {
     const rows = await messagesRepo.conversations(myNumber)
     return rows.map((r) => ({
       phoneNumber: r.partner_number,
-      displayName: r.partner_name || r.partner_number, // rehberde varsa isim
+      displayName: r.partner_number,
       lastMessage: r.last_message,
       lastTime: r.last_time,
       unread: Number(r.unread) || 0,
     }))
   },
 
-  async thread(myNumber: string, partnerNumber: string): Promise<Message[]> {
-    const rows = await messagesRepo.thread(myNumber, partnerNumber)
-    await messagesRepo.markRead(myNumber, partnerNumber)
-    return rows.map((r) => toMessage(r, myNumber))
+  async thread(
+    myNumber: string,
+    partnerNumber: string,
+    beforeId: number,
+    limit: number,
+  ): Promise<Page<Message>> {
+    const rows = await messagesRepo.thread(myNumber, partnerNumber, beforeId, limit)
+    // Sadece ilk sayfa (en yeni) yuklenirken okundu isaretle
+    if (beforeId === 0) await messagesRepo.markRead(myNumber, partnerNumber)
+
+    // DB'den DESC (yeni->eski) geldi; ekranda ASC (eski->yeni) gosterecegiz
+    const items = rows.map((r) => toMessage(r, myNumber)).reverse()
+    const nextCursor = rows.length === limit ? rows[rows.length - 1]!.id : null
+    return { items, nextCursor }
   },
 
   async send(fromNumber: string, toNumber: string, content: string): Promise<Message | null> {

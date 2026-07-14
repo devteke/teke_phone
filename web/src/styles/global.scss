@@ -1,4 +1,8 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
@@ -38,7 +42,10 @@ body {
     opacity: 0.7;
   }
 
-  &__welcome { padding: 2vh; font-size: 2vh; }
+  &__welcome {
+    padding: 2vh;
+    font-size: 2vh;
+  }
 }
 
 /* --- Faz 1: uygulama ekranlari --- */
@@ -48,6 +55,7 @@ body {
   gap: 2vh 1vh;
   padding: 2vh;
 }
+
 .app {
   display: flex;
   flex-direction: column;
@@ -56,6 +64,7 @@ body {
   text-decoration: none;
   color: #fff;
 }
+
 .app__icon {
   width: 6vh;
   height: 6vh;
@@ -66,7 +75,10 @@ body {
   font-size: 3vh;
   background: linear-gradient(160deg, #2c2c3a, #1a1a24);
 }
-.app__label { font-size: 1.4vh; }
+
+.app__label {
+  font-size: 1.4vh;
+}
 
 .screen {
   flex: 1;
@@ -83,6 +95,7 @@ body {
   padding: 1.2vh 1.4vh;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
+
 .appbar__back,
 .appbar__add {
   background: none;
@@ -93,10 +106,23 @@ body {
   cursor: pointer;
   text-decoration: none;
 }
-.appbar__title { flex: 1; font-size: 1.9vh; font-weight: 600; }
-.appbar__action { min-width: 3vh; text-align: right; }
 
-.list { flex: 1; overflow-y: auto; }
+.appbar__title {
+  flex: 1;
+  font-size: 1.9vh;
+  font-weight: 600;
+}
+
+.appbar__action {
+  min-width: 3vh;
+  text-align: right;
+}
+
+.list {
+  flex: 1;
+  overflow-y: auto;
+}
+
 .row {
   display: flex;
   align-items: center;
@@ -106,8 +132,20 @@ body {
   text-decoration: none;
   color: #fff;
 }
-.row__main { flex: 1; display: flex; flex-direction: column; gap: 0.3vh; min-width: 0; }
-.row__title { font-size: 1.7vh; font-weight: 600; }
+
+.row__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3vh;
+  min-width: 0;
+}
+
+.row__title {
+  font-size: 1.7vh;
+  font-weight: 600;
+}
+
 .row__sub {
   font-size: 1.4vh;
   opacity: 0.6;
@@ -115,11 +153,28 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.row__actions { display: flex; gap: 0.8vh; }
+
+.row__actions {
+  display: flex;
+  gap: 0.8vh;
+}
+
 .row__link,
-.row__del { background: none; border: none; cursor: pointer; font-size: 1.4vh; text-decoration: none; }
-.row__link { color: #0a84ff; }
-.row__del { color: #ff453a; }
+.row__del {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.4vh;
+  text-decoration: none;
+}
+
+.row__link {
+  color: #0a84ff;
+}
+
+.row__del {
+  color: #ff453a;
+}
 
 .badge {
   background: #ff3b30;
@@ -133,37 +188,14 @@ body {
   align-items: center;
   justify-content: center;
 }
-.muted { padding: 2vh; opacity: 0.5; font-size: 1.5vh; text-align: center; }
 
-.chat {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8vh;
-  padding: 1.4vh;
-}
-.bubble {
-  max-width: 72%;
-  align-self: flex-start;
-  padding: 1vh 1.3vh;
-  border-radius: 1.8vh;
-  background: #2c2c3a;
+.muted {
+  padding: 2vh;
+  opacity: 0.5;
   font-size: 1.5vh;
-  word-break: break-word;
-}
-.bubble--mine {
-  align-self: flex-end;
-  background: #0a84ff;
+  text-align: center;
 }
 
-.composer {
-  display: flex;
-  gap: 0.8vh;
-  padding: 1vh 1.2vh;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-.composer__input,
 .form__input {
   flex: 1;
   background: #1c1c26;
@@ -174,7 +206,7 @@ body {
   font-size: 1.5vh;
   outline: none;
 }
-.composer__send,
+
 .form__save {
   background: #0a84ff;
   border: none;
@@ -184,5 +216,104 @@ body {
   font-size: 1.5vh;
   cursor: pointer;
 }
-.form { display: flex; flex-direction: column; gap: 1.2vh; padding: 1.6vh; }
-.form__save { align-self: flex-start; }
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+  padding: 1.6vh;
+}
+
+.form__save {
+  align-self: flex-start;
+}
+
+/* --- Sohbet ekrani --- */
+.chat {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vh;
+  padding: 1.4vh 1.2vh 2vh;
+}
+.chat__loader {
+  align-self: center;
+  font-size: 1.3vh;
+  opacity: 0.5;
+  padding: 0.8vh 0;
+}
+
+.bubble {
+  max-width: 74%;
+  padding: 0.9vh 1.2vh;
+  border-radius: 1.9vh;
+  font-size: 1.55vh;
+  line-height: 1.35;
+  word-break: break-word;
+  display: inline-flex;
+  flex-direction: column;
+}
+.bubble--their {
+  align-self: flex-start;
+  background: #26262e;
+  border-bottom-left-radius: 0.5vh;
+}
+.bubble--mine {
+  align-self: flex-end;
+  background: linear-gradient(160deg, #0a84ff, #0066d6);
+  border-bottom-right-radius: 0.5vh;
+}
+.bubble__text { display: block; }
+.bubble__time {
+  align-self: flex-end;
+  font-size: 1.05vh;
+  opacity: 0.55;
+  margin-top: 0.25vh;
+}
+
+/* ince scrollbar (sohbet + listeler) */
+.chat::-webkit-scrollbar,
+.list::-webkit-scrollbar { width: 0.6vh; }
+.chat::-webkit-scrollbar-thumb,
+.list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+}
+.chat::-webkit-scrollbar-track,
+.list::-webkit-scrollbar-track { background: transparent; }
+
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 0.8vh;
+  padding: 1vh 1.2vh;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+}
+.composer__input {
+  flex: 1;
+  background: #1c1c26;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.9vh;
+  padding: 1vh 1.3vh;
+  color: #fff;
+  font-size: 1.5vh;
+  outline: none;
+}
+.composer__send {
+  width: 4.2vh;
+  height: 4.2vh;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #0a84ff;
+  border: none;
+  color: #fff;
+  font-size: 1.7vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.composer__send:disabled { opacity: 0.4; cursor: default; }

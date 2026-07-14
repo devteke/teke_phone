@@ -1,6 +1,6 @@
 import { onClientCallback } from '@overextended/ox_lib/server'
 import { Events } from '../../shared/events'
-import type { Conversation, Message } from '../../shared/types'
+import type { Conversation, Message, Page } from '../../shared/types'
 import { resolveIdentity, onlineSourceByNumber } from './identity'
 import { messagesService } from './messages.service'
 
@@ -13,10 +13,16 @@ export function registerMessageCallbacks(): void {
 
   onClientCallback(
     Events.getMessages,
-    async (source: number, partnerNumber: string): Promise<Message[]> => {
+    async (
+      source: number,
+      payload: { partner: string; beforeId?: number; limit?: number },
+    ): Promise<Page<Message>> => {
       const me = await resolveIdentity(source)
-      if (!me || !partnerNumber) return []
-      return messagesService.thread(me.phoneNumber, partnerNumber)
+      const partner = payload?.partner
+      if (!me || !partner) return { items: [], nextCursor: null }
+      const limit = Math.min(Math.max(payload?.limit ?? 20, 1), 50)
+      const beforeId = payload?.beforeId ?? 0
+      return messagesService.thread(me.phoneNumber, partner, beforeId, limit)
     },
   )
 

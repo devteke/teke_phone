@@ -1,3 +1,8 @@
+export interface Page<T> {
+  items: T[]
+  nextCursor: number | null // daha eski sayfa icin id; yoksa null
+}
+
 export interface PhoneData {
   phoneNumber: string
   ownerName: string

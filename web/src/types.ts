@@ -1,3 +1,8 @@
+export interface Page<T> {
+  items: T[]
+  nextCursor: number | null
+}
+
 export interface Contact {
   id: number
   name: string
