@@ -29,4 +29,13 @@ export const phoneRepo = {
       [citizenid, phoneNumber],
     )
   },
+
+  async findByNumber(phoneNumber: string): Promise<PhoneRow | null> {
+  const row = await oxmysql.single_async(
+    'SELECT citizenid, phone_number FROM teke_phones WHERE phone_number = ?',
+    [phoneNumber],
+  )
+  return row ?? null
+},
+
 }

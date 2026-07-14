@@ -1,0 +1,22 @@
+export interface Contact {
+  id: number
+  name: string
+  phoneNumber: string
+}
+
+export interface Conversation {
+  phoneNumber: string
+  displayName: string
+  lastMessage: string
+  lastTime: string
+  unread: number
+}
+
+export interface Message {
+  id: number
+  senderNumber: string
+  receiverNumber: string
+  content: string
+  createdAt: string
+  isMine: boolean
+}

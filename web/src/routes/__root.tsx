@@ -1,7 +1,9 @@
 import { useEffect } from 'react'
 import { Outlet } from '@tanstack/react-router'
 import { useNuiEvent } from '../hooks/useNuiEvent'
+import { useIncomingMessages } from '../hooks/useIncomingMessages'
 import { fetchNui } from '../lib/fetchNui'
+
 import { usePhoneStore, type PhoneData } from '../store/phone.store'
 
 export function RootLayout() {
@@ -9,9 +11,11 @@ export function RootLayout() {
   const setVisible = usePhoneStore((s) => s.setVisible)
   const setPhone = usePhoneStore((s) => s.setPhone)
 
-  // client -> NUI olayları
   useNuiEvent<boolean>('setVisible', setVisible)
   useNuiEvent<PhoneData>('setPhoneData', setPhone)
+
+  // Gelen mesaj push'larini dinle
+  useIncomingMessages()
 
   // ESC ile kapat
   useEffect(() => {

@@ -1,4 +1,5 @@
 export const Config = {
+  dev: true,
   // Telefonu açan item (ox_inventory usable item adı)
   phoneItem: 'phone',
   // Aç/kapat kısayolu (RegisterKeyMapping varsayılanı)

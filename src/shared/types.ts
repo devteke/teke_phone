@@ -7,3 +7,26 @@ export interface NuiMessage<T = unknown> {
   action: string
   data?: T
 }
+
+export interface Contact {
+  id: number
+  name: string
+  phoneNumber: string
+}
+
+export interface Conversation {
+  phoneNumber: string   // karsi taraf
+  displayName: string   // rehberdeki isim ya da numara
+  lastMessage: string
+  lastTime: string
+  unread: number
+}
+
+export interface Message {
+  id: number
+  senderNumber: string
+  receiverNumber: string
+  content: string
+  createdAt: string
+  isMine: boolean       // goruntuleyen icin: ben mi gonderdim
+}
