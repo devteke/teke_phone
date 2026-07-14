@@ -1,14 +1,13 @@
 // Tum net event / callback / NUI isimleri tek yerde (cakismayi onler)
 export const Events = {
-  // client -> server (ox_lib onClientCallback / triggerServerCallback)
   getPhoneData: 'teke_phone:getPhoneData',
   getContacts: 'teke_phone:getContacts',
+  getContactNames: 'teke_phone:getContactNames',
   saveContact: 'teke_phone:saveContact',
   deleteContact: 'teke_phone:deleteContact',
   getConversations: 'teke_phone:getConversations',
   getMessages: 'teke_phone:getMessages',
   sendMessage: 'teke_phone:sendMessage',
-  // server -> client (push)
   openPhone: 'teke_phone:client:open',
   newMessage: 'teke_phone:client:newMessage',
 } as const

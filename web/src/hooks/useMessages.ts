@@ -2,7 +2,6 @@ import { useCallback } from 'react'
 import {
   useInfiniteQuery,
   useMutation,
-  useQuery,
   useQueryClient,
   type InfiniteData,
   type QueryClient,
@@ -10,27 +9,33 @@ import {
 import * as api from '../api/messages'
 import type { Conversation, Message, Page } from '../types'
 
-const PAGE_SIZE = 20
+const MESSAGE_PAGE = 20
+const CONV_PAGE = 15
 type ThreadCache = InfiniteData<Page<Message>, number>
+type ConvCache = InfiniteData<Page<Conversation>, number>
 
 export function useConversations() {
-  return useQuery({ queryKey: ['conversations'], queryFn: api.getConversations })
+  return useInfiniteQuery({
+    queryKey: ['conversations'],
+    queryFn: ({ pageParam }) => api.getConversations(pageParam, CONV_PAGE),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+  })
 }
 
 export function useThread(partner: string) {
   return useInfiniteQuery({
     queryKey: ['messages', partner],
-    queryFn: ({ pageParam }) => api.getMessages(partner, pageParam, PAGE_SIZE),
+    queryFn: ({ pageParam }) => api.getMessages(partner, pageParam, MESSAGE_PAGE),
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined, // daha eski sayfa
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined, // daha eski
     enabled: !!partner,
   })
 }
 
-// Yeni mesaji sohbet cache'inin EN YENI sayfasina ekler (DB'ye gitmeden)
 export function appendMessageToThread(qc: QueryClient, partner: string, msg: Message) {
   qc.setQueryData<ThreadCache>(['messages', partner], (old) => {
-    if (!old) return old // sohbet hic acilmadiysa dokunma (acilinca DB'den gelir)
+    if (!old) return old
     const exists = old.pages.some((p) => p.items.some((m) => m.id === msg.id))
     if (exists) return old
     const pages = old.pages.slice()
@@ -39,35 +44,34 @@ export function appendMessageToThread(qc: QueryClient, partner: string, msg: Mes
   })
 }
 
-// Konusma listesini client-side gunceller (DB'ye gitmeden)
+// Konusma listesini (infinite cache) DB'siz gunceller
 export function bumpConversation(
   qc: QueryClient,
   opts: { partner: string; content: string; time: string; incoming: boolean },
 ) {
-  qc.setQueryData<Conversation[]>(['conversations'], (old) => {
-    const list = old ? old.slice() : []
-    const idx = list.findIndex((c) => c.phoneNumber === opts.partner)
-    if (idx >= 0) {
-      const conv = list[idx]!
-      const updated: Conversation = {
-        ...conv,
-        lastMessage: opts.content,
-        lastTime: opts.time,
-        unread: opts.incoming ? conv.unread + 1 : conv.unread,
-      }
-      list.splice(idx, 1)
-      return [updated, ...list] // en uste tasi
+  qc.setQueryData<ConvCache>(['conversations'], (old) => {
+    if (!old) return old // liste hic yuklenmediyse dokunma (acilinca DB'den gelir)
+    let found: Conversation | undefined
+    const pages = old.pages.map((pg) => ({
+      ...pg,
+      items: pg.items.filter((c) => {
+        if (c.phoneNumber === opts.partner) {
+          found = c
+          return false
+        }
+        return true
+      }),
+    }))
+    const base: Conversation =
+      found ?? { phoneNumber: opts.partner, displayName: opts.partner, lastMessage: '', lastTime: '', unread: 0 }
+    const updated: Conversation = {
+      ...base,
+      lastMessage: opts.content,
+      lastTime: opts.time,
+      unread: opts.incoming ? base.unread + 1 : base.unread,
     }
-    return [
-      {
-        phoneNumber: opts.partner,
-        displayName: opts.partner,
-        lastMessage: opts.content,
-        lastTime: opts.time,
-        unread: opts.incoming ? 1 : 0,
-      },
-      ...list,
-    ]
+    pages[0] = { ...pages[0]!, items: [updated, ...pages[0]!.items] }
+    return { ...old, pages }
   })
 }
 
@@ -83,12 +87,18 @@ export function useSendMessage(partner: string) {
   })
 }
 
-// Sohbeti acinca okundu isaretle (badge'i sifirla)
 export function useMarkConversationRead(partner: string) {
   const qc = useQueryClient()
   return useCallback(() => {
-    qc.setQueryData<Conversation[]>(['conversations'], (old) =>
-      old?.map((c) => (c.phoneNumber === partner ? { ...c, unread: 0 } : c)),
-    )
+    qc.setQueryData<ConvCache>(['conversations'], (old) => {
+      if (!old) return old
+      return {
+        ...old,
+        pages: old.pages.map((pg) => ({
+          ...pg,
+          items: pg.items.map((c) => (c.phoneNumber === partner ? { ...c, unread: 0 } : c)),
+        })),
+      }
+    })
   }, [qc, partner])
 }

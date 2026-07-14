@@ -238,6 +238,7 @@ body {
   gap: 0.5vh;
   padding: 1.4vh 1.2vh 2vh;
 }
+
 .chat__loader {
   align-self: center;
   font-size: 1.3vh;
@@ -255,17 +256,23 @@ body {
   display: inline-flex;
   flex-direction: column;
 }
+
 .bubble--their {
   align-self: flex-start;
   background: #26262e;
   border-bottom-left-radius: 0.5vh;
 }
+
 .bubble--mine {
   align-self: flex-end;
   background: linear-gradient(160deg, #0a84ff, #0066d6);
   border-bottom-right-radius: 0.5vh;
 }
-.bubble__text { display: block; }
+
+.bubble__text {
+  display: block;
+}
+
 .bubble__time {
   align-self: flex-end;
   font-size: 1.05vh;
@@ -275,14 +282,20 @@ body {
 
 /* ince scrollbar (sohbet + listeler) */
 .chat::-webkit-scrollbar,
-.list::-webkit-scrollbar { width: 0.6vh; }
+.list::-webkit-scrollbar {
+  width: 0.6vh;
+}
+
 .chat::-webkit-scrollbar-thumb,
 .list::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 999px;
 }
+
 .chat::-webkit-scrollbar-track,
-.list::-webkit-scrollbar-track { background: transparent; }
+.list::-webkit-scrollbar-track {
+  background: transparent;
+}
 
 .composer {
   display: flex;
@@ -292,6 +305,7 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(0, 0, 0, 0.2);
 }
+
 .composer__input {
   flex: 1;
   background: #1c1c26;
@@ -302,6 +316,7 @@ body {
   font-size: 1.5vh;
   outline: none;
 }
+
 .composer__send {
   width: 4.2vh;
   height: 4.2vh;
@@ -316,4 +331,38 @@ body {
   justify-content: center;
   cursor: pointer;
 }
-.composer__send:disabled { opacity: 0.4; cursor: default; }
+
+.composer__send:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1vh;
+  padding: 1vh 1.2vh;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pager__btn {
+  background: #1c1c26;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #0a84ff;
+  border-radius: 1.4vh;
+  padding: 0.8vh 1.2vh;
+  font-size: 1.4vh;
+  cursor: pointer;
+}
+
+.pager__btn:disabled {
+  opacity: 0.35;
+  color: #888;
+  cursor: default;
+}
+
+.pager__info {
+  font-size: 1.4vh;
+  opacity: 0.7;
+}

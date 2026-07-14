@@ -1,4 +1,3 @@
-// Yalnizca DB erisimi.
 const oxmysql = (globalThis as any).exports.oxmysql
 
 export interface ContactRow {
@@ -8,14 +7,29 @@ export interface ContactRow {
 }
 
 export const contactsRepo = {
-  async list(ownerNumber: string): Promise<ContactRow[]> {
+  async page(ownerNumber: string, limit: number, offset: number): Promise<ContactRow[]> {
     return (await oxmysql.query_async(
-      'SELECT id, name, phone_number FROM teke_phone_contacts WHERE owner_number = ? ORDER BY name ASC',
+      'SELECT id, name, phone_number FROM teke_phone_contacts WHERE owner_number = ? ORDER BY name ASC LIMIT ? OFFSET ?',
+      [ownerNumber, limit, offset],
+    )) ?? []
+  },
+
+  async count(ownerNumber: string): Promise<number> {
+    const n = await oxmysql.scalar_async(
+      'SELECT COUNT(*) FROM teke_phone_contacts WHERE owner_number = ?',
+      [ownerNumber],
+    )
+    return Number(n) || 0
+  },
+
+  // Isim cozumu icin minimal tam liste (numara -> isim).
+  async names(ownerNumber: string): Promise<Array<{ name: string; phone_number: string }>> {
+    return (await oxmysql.query_async(
+      'SELECT name, phone_number FROM teke_phone_contacts WHERE owner_number = ?',
       [ownerNumber],
     )) ?? []
   },
 
-  // Ayni sahip+numara varsa cogaltmaz, sadece ismi gunceller (uq_owner_number).
   async insert(ownerNumber: string, name: string, phoneNumber: string): Promise<number> {
     return oxmysql.insert_async(
       `INSERT INTO teke_phone_contacts (owner_number, name, phone_number)

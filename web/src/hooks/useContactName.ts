@@ -1,16 +1,13 @@
 import { useMemo } from 'react'
-import { useContacts } from './useContacts'
+import { useContactNames } from './useContacts'
 
-// Numara -> rehber ismi cozumu. Tamamen client cache'ten (useContacts) turer.
-// Rehbere ekleme/silme aninda ['contacts'] cache guncellenince her yer otomatik yenilenir.
+// Numara -> rehber ismi. Kaynak: hafif contactNames haritasi (sayfalamadan bagimsiz).
 export function useResolveName() {
-  const { data: contacts = [] } = useContacts()
-
+  const { data: contacts = [] } = useContactNames()
   const byNumber = useMemo(() => {
-    const map = new Map<string, string>()
-    for (const c of contacts) map.set(c.phoneNumber, c.name)
-    return map
+    const m = new Map<string, string>()
+    for (const c of contacts) m.set(c.phoneNumber, c.name)
+    return m
   }, [contacts])
-
   return (phoneNumber: string): string => byNumber.get(phoneNumber) ?? phoneNumber
 }

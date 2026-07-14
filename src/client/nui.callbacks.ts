@@ -12,6 +12,7 @@ function proxy(nuiName: string, serverEvent: string): void {
 
 export function registerNuiProxies(): void {
   proxy('getContacts', Events.getContacts)
+  proxy('getContactNames', Events.getContactNames)
   proxy('saveContact', Events.saveContact)
   proxy('deleteContact', Events.deleteContact)
   proxy('getConversations', Events.getConversations)

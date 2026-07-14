@@ -2,7 +2,10 @@ export interface Page<T> {
   items: T[]
   nextCursor: number | null
 }
-
+export interface PagedList<T> {
+  items: T[]
+  total: number
+}
 export interface Contact {
   id: number
   name: string

@@ -17,7 +17,7 @@ export interface ConversationRow {
 
 export const messagesRepo = {
   // Her partner icin son mesaj + okunmamis sayisi + rehber ismi.
-  async conversations(myNumber: string): Promise<ConversationRow[]> {
+  async conversations(myNumber: string, limit: number, offset: number): Promise<ConversationRow[]> {
     return (await oxmysql.query_async(
       `SELECT
        t.partner_number,
@@ -35,8 +35,9 @@ export const messagesRepo = {
        WHERE sender_number = ? OR receiver_number = ?
      ) t
      GROUP BY t.partner_number
-     ORDER BY last_time DESC`,
-      [myNumber, myNumber, myNumber, myNumber, myNumber, myNumber],
+     ORDER BY last_time DESC
+     LIMIT ? OFFSET ?`,
+      [myNumber, myNumber, myNumber, myNumber, myNumber, myNumber, limit, offset],
     )) ?? []
   },
 

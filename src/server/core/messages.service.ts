@@ -13,28 +13,22 @@ function toMessage(row: MessageRow, myNumber: string): Message {
 }
 
 export const messagesService = {
-  async conversations(myNumber: string): Promise<Conversation[]> {
-    const rows = await messagesRepo.conversations(myNumber)
-    return rows.map((r) => ({
+  async conversations(myNumber: string, limit: number, offset: number): Promise<Page<Conversation>> {
+    const rows = await messagesRepo.conversations(myNumber, limit, offset)
+    const items: Conversation[] = rows.map((r) => ({
       phoneNumber: r.partner_number,
-      displayName: r.partner_number,
+      displayName: r.partner_number, // isim cozumu NUI'de (contactNames)
       lastMessage: r.last_message,
       lastTime: r.last_time,
       unread: Number(r.unread) || 0,
     }))
+    const nextCursor = rows.length === limit ? offset + limit : null
+    return { items, nextCursor }
   },
 
-  async thread(
-    myNumber: string,
-    partnerNumber: string,
-    beforeId: number,
-    limit: number,
-  ): Promise<Page<Message>> {
+  async thread(myNumber: string, partnerNumber: string, beforeId: number, limit: number): Promise<Page<Message>> {
     const rows = await messagesRepo.thread(myNumber, partnerNumber, beforeId, limit)
-    // Sadece ilk sayfa (en yeni) yuklenirken okundu isaretle
     if (beforeId === 0) await messagesRepo.markRead(myNumber, partnerNumber)
-
-    // DB'den DESC (yeni->eski) geldi; ekranda ASC (eski->yeni) gosterecegiz
     const items = rows.map((r) => toMessage(r, myNumber)).reverse()
     const nextCursor = rows.length === limit ? rows[rows.length - 1]!.id : null
     return { items, nextCursor }
@@ -45,13 +39,6 @@ export const messagesService = {
     const to = (toNumber ?? '').trim()
     if (!trimmed || !to) return null
     const id = await messagesRepo.insert(fromNumber, to, trimmed)
-    return {
-      id,
-      senderNumber: fromNumber,
-      receiverNumber: to,
-      content: trimmed,
-      createdAt: new Date().toISOString(),
-      isMine: true,
-    }
+    return { id, senderNumber: fromNumber, receiverNumber: to, content: trimmed, createdAt: new Date().toISOString(), isMine: true }
   },
 }
