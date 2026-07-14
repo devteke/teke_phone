@@ -21,6 +21,7 @@ export interface Contact {
   id: number
   name: string
   phoneNumber: string
+  favorite: boolean
 }
 
 export interface Conversation {

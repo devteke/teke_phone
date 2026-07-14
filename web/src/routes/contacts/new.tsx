@@ -9,11 +9,11 @@ export function NewContactScreen() {
   const [name, setName] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
 
-  const onSave = async () => {
-    if (!name.trim() || !phoneNumber.trim()) return
-    await save.mutateAsync({ name: name.trim(), phoneNumber: phoneNumber.trim() })
-    router.navigate({ to: '/contacts' })
-  }
+const onSave = async () => {
+  if (!name.trim() || !phoneNumber.trim()) return
+  await save.mutateAsync({ name: name.trim(), phoneNumber: phoneNumber.trim() })
+  router.history.back() 
+}
 
   return (
     <div className="screen">

@@ -4,28 +4,13 @@ export interface ContactRow {
   id: number
   name: string
   phone_number: string
+  is_favorite: number
 }
 
 export const contactsRepo = {
-  async page(ownerNumber: string, limit: number, offset: number): Promise<ContactRow[]> {
+  async list(ownerNumber: string): Promise<ContactRow[]> {
     return (await oxmysql.query_async(
-      'SELECT id, name, phone_number FROM teke_phone_contacts WHERE owner_number = ? ORDER BY name ASC LIMIT ? OFFSET ?',
-      [ownerNumber, limit, offset],
-    )) ?? []
-  },
-
-  async count(ownerNumber: string): Promise<number> {
-    const n = await oxmysql.scalar_async(
-      'SELECT COUNT(*) FROM teke_phone_contacts WHERE owner_number = ?',
-      [ownerNumber],
-    )
-    return Number(n) || 0
-  },
-
-  // Isim cozumu icin minimal tam liste (numara -> isim).
-  async names(ownerNumber: string): Promise<Array<{ name: string; phone_number: string }>> {
-    return (await oxmysql.query_async(
-      'SELECT name, phone_number FROM teke_phone_contacts WHERE owner_number = ?',
+      'SELECT id, name, phone_number, is_favorite FROM teke_phone_contacts WHERE owner_number = ? ORDER BY name ASC',
       [ownerNumber],
     )) ?? []
   },
@@ -43,6 +28,13 @@ export const contactsRepo = {
     await oxmysql.update_async(
       'DELETE FROM teke_phone_contacts WHERE id = ? AND owner_number = ?',
       [id, ownerNumber],
+    )
+  },
+
+  async setFavorite(ownerNumber: string, id: number, favorite: boolean): Promise<void> {
+    await oxmysql.update_async(
+      'UPDATE teke_phone_contacts SET is_favorite = ? WHERE id = ? AND owner_number = ?',
+      [favorite ? 1 : 0, id, ownerNumber],
     )
   },
 }

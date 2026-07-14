@@ -1,22 +1,13 @@
-import type { Contact, PagedList } from '../../shared/types'
+import type { Contact } from '../../shared/types'
 import { contactsRepo, type ContactRow } from '../db/contacts.repo'
 
 function toContact(row: ContactRow): Contact {
-  return { id: row.id, name: row.name, phoneNumber: row.phone_number }
+  return { id: row.id, name: row.name, phoneNumber: row.phone_number, favorite: !!row.is_favorite }
 }
 
 export const contactsService = {
-  async list(ownerNumber: string, limit: number, offset: number): Promise<PagedList<Contact>> {
-    const [rows, total] = await Promise.all([
-      contactsRepo.page(ownerNumber, limit, offset),
-      contactsRepo.count(ownerNumber),
-    ])
-    return { items: rows.map(toContact), total }
-  },
-
-  async names(ownerNumber: string): Promise<Contact[]> {
-    const rows = await contactsRepo.names(ownerNumber)
-    return rows.map((r) => ({ id: 0, name: r.name, phoneNumber: r.phone_number }))
+  async list(ownerNumber: string): Promise<Contact[]> {
+    return (await contactsRepo.list(ownerNumber)).map(toContact)
   },
 
   async save(ownerNumber: string, input: { name?: string; phoneNumber?: string }): Promise<void> {
@@ -27,5 +18,9 @@ export const contactsService = {
 
   async remove(ownerNumber: string, id: number): Promise<void> {
     if (id) await contactsRepo.remove(ownerNumber, id)
+  },
+
+  async setFavorite(ownerNumber: string, id: number, favorite: boolean): Promise<void> {
+    if (id) await contactsRepo.setFavorite(ownerNumber, id, favorite)
   },
 }

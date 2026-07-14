@@ -2,9 +2,9 @@
 export const Events = {
   getPhoneData: 'teke_phone:getPhoneData',
   getContacts: 'teke_phone:getContacts',
-  getContactNames: 'teke_phone:getContactNames',
   saveContact: 'teke_phone:saveContact',
   deleteContact: 'teke_phone:deleteContact',
+  setFavorite: 'teke_phone:setFavorite',
   getConversations: 'teke_phone:getConversations',
   getMessages: 'teke_phone:getMessages',
   sendMessage: 'teke_phone:sendMessage',
