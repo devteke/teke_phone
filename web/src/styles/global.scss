@@ -1,0 +1,42 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  background: transparent;
+  overflow: hidden;
+  user-select: none;
+}
+
+.phone {
+  position: absolute;
+  right: 3vh;
+  bottom: 3vh;
+
+  &__frame {
+    width: 34vh;
+    height: 72vh;
+    border-radius: 4.5vh;
+    background: #0b0b0f;
+    box-shadow: 0 2vh 6vh rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+
+  &__status {
+    display: flex;
+    justify-content: center;
+    padding: 1.4vh;
+    font-size: 1.6vh;
+    opacity: 0.7;
+  }
+
+  &__welcome { padding: 2vh; font-size: 2vh; }
+}
