@@ -15,9 +15,12 @@ export const contactsRepo = {
     )) ?? []
   },
 
+  // Ayni sahip+numara varsa cogaltmaz, sadece ismi gunceller (uq_owner_number).
   async insert(ownerNumber: string, name: string, phoneNumber: string): Promise<number> {
     return oxmysql.insert_async(
-      'INSERT INTO teke_phone_contacts (owner_number, name, phone_number) VALUES (?, ?, ?)',
+      `INSERT INTO teke_phone_contacts (owner_number, name, phone_number)
+       VALUES (?, ?, ?)
+       ON DUPLICATE KEY UPDATE name = VALUES(name)`,
       [ownerNumber, name, phoneNumber],
     )
   },

@@ -1,5 +1,5 @@
 export const Config = {
-  dev: true,
+  
   // Telefonu açan item (ox_inventory usable item adı)
   phoneItem: 'phone',
   // Aç/kapat kısayolu (RegisterKeyMapping varsayılanı)
@@ -7,6 +7,7 @@ export const Config = {
   // Numara formatı: 555XXXXXXX
   numberPrefix: '555',
   numberLength: 7,
+  dev: true,
 } as const
 
 export type ConfigType = typeof Config

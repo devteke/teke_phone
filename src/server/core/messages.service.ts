@@ -17,7 +17,7 @@ export const messagesService = {
     const rows = await messagesRepo.conversations(myNumber)
     return rows.map((r) => ({
       phoneNumber: r.partner_number,
-      displayName: r.partner_number, // isim cozumu NUI'de rehberle yapilir
+      displayName: r.partner_name || r.partner_number, // rehberde varsa isim
       lastMessage: r.last_message,
       lastTime: r.last_time,
       unread: Number(r.unread) || 0,

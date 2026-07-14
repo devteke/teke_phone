@@ -10,17 +10,20 @@ export interface MessageRow {
 
 export interface ConversationRow {
   partner_number: string
+  partner_name: string | null
   last_message: string
   last_time: string
   unread: number
 }
 
 export const messagesRepo = {
-  // Her partner icin son mesaj + okunmamis sayisi.
+  // Her partner icin son mesaj + okunmamis sayisi + rehber ismi.
   async conversations(myNumber: string): Promise<ConversationRow[]> {
     return (await oxmysql.query_async(
       `SELECT
          t.partner_number,
+         (SELECT c.name FROM teke_phone_contacts c
+          WHERE c.owner_number = ? AND c.phone_number = t.partner_number LIMIT 1) AS partner_name,
          (SELECT content FROM teke_phone_messages m
           WHERE (m.sender_number = ? AND m.receiver_number = t.partner_number)
              OR (m.sender_number = t.partner_number AND m.receiver_number = ?)
@@ -36,7 +39,7 @@ export const messagesRepo = {
        ) t
        GROUP BY t.partner_number
        ORDER BY last_time DESC`,
-      [myNumber, myNumber, myNumber, myNumber, myNumber, myNumber],
+      [myNumber, myNumber, myNumber, myNumber, myNumber, myNumber, myNumber],
     )) ?? []
   },
 
