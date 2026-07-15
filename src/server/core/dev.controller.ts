@@ -2,6 +2,7 @@ import { Events } from '../../shared/events'
 import { resolveIdentity } from './identity'
 import { messagesRepo } from '../db/messages.repo'
 import { contactsRepo } from '../db/contacts.repo'
+import { callsService } from './calls.service'
 
 // Tek kisilik test icin sahte veri + gelen mesaj simulasyonu.
 // Sadece Config.dev = true iken index.ts kaydeder.
@@ -47,6 +48,22 @@ export function registerDevCommands(): void {
         isMine: false,
       })
       console.log(`[teke_phone][dev] ${from} -> ${me.phoneNumber}: ${content}`)
+    },
+    false,
+  )
+
+  // Sahte cagri kayitlari (giden / gelen / cevapsiz) - Son Aramalar sekmesini test icin
+  RegisterCommand(
+    'teke_devcall',
+    async (source: number) => {
+      const me = await resolveIdentity(source)
+      if (!me) return
+      const partner = '5551112233'
+      await contactsRepo.insert(me.phoneNumber, 'Test Kisi', partner)
+      await callsService.log(me.phoneNumber, partner, 'answered', 42) // giden, 42 sn
+      await callsService.log(partner, me.phoneNumber, 'answered', 15) // gelen, 15 sn
+      await callsService.log(partner, me.phoneNumber, 'missed', 0)    // cevapsiz
+      console.log(`[teke_phone][dev] ${me.phoneNumber} icin sahte cagrilar eklendi`)
     },
     false,
   )

@@ -15,6 +15,7 @@ export function registerNuiProxies(): void {
   proxy('saveContact', Events.saveContact)
   proxy('deleteContact', Events.deleteContact)
   proxy('setFavorite', Events.setFavorite)
+  proxy('getCalls', Events.getCalls)
   proxy('getConversations', Events.getConversations)
   proxy('getMessages', Events.getMessages)
   proxy('sendMessage', Events.sendMessage)

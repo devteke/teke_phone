@@ -8,11 +8,43 @@ export interface ContactRow {
 }
 
 export const contactsRepo = {
-  async list(ownerNumber: string): Promise<ContactRow[]> {
+  // Sayfali liste (10'ar). favoritesOnly=true ise sadece favoriler.
+  async listPage(
+    ownerNumber: string,
+    favoritesOnly: boolean,
+    limit: number,
+    offset: number,
+  ): Promise<ContactRow[]> {
+    const favClause = favoritesOnly ? 'AND is_favorite = 1' : ''
     return (await oxmysql.query_async(
-      'SELECT id, name, phone_number, is_favorite FROM teke_phone_contacts WHERE owner_number = ? ORDER BY name ASC',
-      [ownerNumber],
+      `SELECT id, name, phone_number, is_favorite
+       FROM teke_phone_contacts
+       WHERE owner_number = ? ${favClause}
+       ORDER BY name ASC
+       LIMIT ? OFFSET ?`,
+      [ownerNumber, limit, offset],
     )) ?? []
+  },
+
+  // Sayfa sayisini hesaplamak icin toplam kayit.
+  async count(ownerNumber: string, favoritesOnly: boolean): Promise<number> {
+    const favClause = favoritesOnly ? 'AND is_favorite = 1' : ''
+    return (
+      (await oxmysql.scalar_async(
+        `SELECT COUNT(*) FROM teke_phone_contacts WHERE owner_number = ? ${favClause}`,
+        [ownerNumber],
+      )) ?? 0
+    )
+  },
+
+  // Tek numara icin rehber ismi (thread basligi / arama listesi icin).
+  async nameOf(ownerNumber: string, phoneNumber: string): Promise<string | null> {
+    return (
+      (await oxmysql.scalar_async(
+        'SELECT name FROM teke_phone_contacts WHERE owner_number = ? AND phone_number = ? LIMIT 1',
+        [ownerNumber, phoneNumber],
+      )) ?? null
+    )
   },
 
   async insert(ownerNumber: string, name: string, phoneNumber: string): Promise<number> {

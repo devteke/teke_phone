@@ -1,4 +1,4 @@
-import type { Contact } from '../../shared/types'
+import type { Contact, PagedList } from '../../shared/types'
 import { contactsRepo, type ContactRow } from '../db/contacts.repo'
 
 function toContact(row: ContactRow): Contact {
@@ -6,8 +6,17 @@ function toContact(row: ContactRow): Contact {
 }
 
 export const contactsService = {
-  async list(ownerNumber: string): Promise<Contact[]> {
-    return (await contactsRepo.list(ownerNumber)).map(toContact)
+  async list(
+    ownerNumber: string,
+    favoritesOnly: boolean,
+    limit: number,
+    offset: number,
+  ): Promise<PagedList<Contact>> {
+    const [rows, total] = await Promise.all([
+      contactsRepo.listPage(ownerNumber, favoritesOnly, limit, offset),
+      contactsRepo.count(ownerNumber, favoritesOnly),
+    ])
+    return { items: rows.map(toContact), total }
   },
 
   async save(ownerNumber: string, input: { name?: string; phoneNumber?: string }): Promise<void> {

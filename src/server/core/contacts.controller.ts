@@ -1,15 +1,23 @@
 import { onClientCallback } from '@overextended/ox_lib/server'
 import { Events } from '../../shared/events'
-import type { Contact } from '../../shared/types'
+import type { Contact, PagedList } from '../../shared/types'
 import { resolveIdentity } from './identity'
 import { contactsService } from './contacts.service'
 
 export function registerContactCallbacks(): void {
-  onClientCallback(Events.getContacts, async (source: number): Promise<Contact[]> => {
-    const me = await resolveIdentity(source)
-    if (!me) return []
-    return contactsService.list(me.phoneNumber)
-  })
+  onClientCallback(
+    Events.getContacts,
+    async (
+      source: number,
+      payload: { offset?: number; limit?: number; favoritesOnly?: boolean },
+    ): Promise<PagedList<Contact>> => {
+      const me = await resolveIdentity(source)
+      if (!me) return { items: [], total: 0 }
+      const limit = Math.min(Math.max(payload?.limit ?? 10, 1), 50)
+      const offset = Math.max(payload?.offset ?? 0, 0)
+      return contactsService.list(me.phoneNumber, !!payload?.favoritesOnly, limit, offset)
+    },
+  )
 
   onClientCallback(
     Events.saveContact,

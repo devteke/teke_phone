@@ -5,6 +5,7 @@ export const Events = {
   saveContact: 'teke_phone:saveContact',
   deleteContact: 'teke_phone:deleteContact',
   setFavorite: 'teke_phone:setFavorite',
+  getCalls: 'teke_phone:getCalls',
   getConversations: 'teke_phone:getConversations',
   getMessages: 'teke_phone:getMessages',
   sendMessage: 'teke_phone:sendMessage',
