@@ -319,3 +319,53 @@ body {
   cursor: pointer;
 }
 .composer__send:disabled { opacity: 0.4; cursor: default; }
+
+/* --- Sekmeler (segmented) --- */
+.tabs {
+  display: flex;
+  gap: 0.4vh;
+  margin: 1vh 1.4vh 0;
+  padding: 0.4vh;
+  background: var(--surface-2);
+  border-radius: 1.4vh;
+}
+.tab {
+  flex: 1;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 1.4vh;
+  font-weight: 600;
+  padding: 0.9vh 0.4vh;
+  border-radius: 1.1vh;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.tab.is-active {
+  background: linear-gradient(160deg, var(--accent), var(--accent-2));
+  color: #fff;
+}
+
+/* --- Sayfalama --- */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4vh;
+  padding: 1vh 1.2vh 1.4vh;
+  border-top: 1px solid var(--line);
+}
+.pager__btn {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 1vh;
+  padding: 0.7vh 1.4vh;
+  font-size: 1.45vh;
+  cursor: pointer;
+}
+.pager__btn:disabled { opacity: 0.35; cursor: default; }
+.pager__info { font-size: 1.4vh; color: var(--muted); min-width: 9vh; text-align: center; }
+
+/* cagri: cevapsiz */
+.row__title.is-missed { color: var(--danger); }

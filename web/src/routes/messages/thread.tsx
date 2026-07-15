@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from '@tanstack/react-router'
 import { AppHeader } from '../../components/AppHeader'
-import { useResolveName } from '../../hooks/useContactName'
 import { useMarkConversationRead, useSendMessage, useThread } from '../../hooks/useMessages'
 
 function formatTime(iso: string): string {
@@ -13,10 +12,11 @@ function formatTime(iso: string): string {
 export function ThreadScreen() {
   const { partner } = useParams({ from: '/messages/$partner' })
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useThread(partner)
-  const resolveName = useResolveName()
   const send = useSendMessage(partner)
   const markRead = useMarkConversationRead(partner)
   const [text, setText] = useState('')
+
+  const partnerName = data?.pages[0]?.partnerName ?? partner
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -76,7 +76,7 @@ export function ThreadScreen() {
 
   return (
     <div className="screen">
-      <AppHeader title={resolveName(partner)} />
+      <AppHeader title={partnerName} />
       <div className="chat" ref={scrollRef} onScroll={onScroll}>
         {isFetchingNextPage && <div className="chat__loader">Yukleniyor...</div>}
         {messages.map((m) => (

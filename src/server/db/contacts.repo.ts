@@ -8,36 +8,47 @@ export interface ContactRow {
 }
 
 export const contactsRepo = {
-  // Sayfali liste (10'ar). favoritesOnly=true ise sadece favoriler.
   async listPage(
     ownerNumber: string,
     favoritesOnly: boolean,
+    search: string,
     limit: number,
     offset: number,
   ): Promise<ContactRow[]> {
     const favClause = favoritesOnly ? 'AND is_favorite = 1' : ''
+    const searchClause = search ? 'AND (name LIKE ? OR phone_number LIKE ?)' : ''
+    const params: Array<string | number> = [ownerNumber]
+    if (search) {
+      const like = `%${search}%`
+      params.push(like, like)
+    }
+    params.push(limit, offset)
     return (await oxmysql.query_async(
       `SELECT id, name, phone_number, is_favorite
        FROM teke_phone_contacts
-       WHERE owner_number = ? ${favClause}
+       WHERE owner_number = ? ${favClause} ${searchClause}
        ORDER BY name ASC
        LIMIT ? OFFSET ?`,
-      [ownerNumber, limit, offset],
+      params,
     )) ?? []
   },
 
-  // Sayfa sayisini hesaplamak icin toplam kayit.
-  async count(ownerNumber: string, favoritesOnly: boolean): Promise<number> {
+  async count(ownerNumber: string, favoritesOnly: boolean, search: string): Promise<number> {
     const favClause = favoritesOnly ? 'AND is_favorite = 1' : ''
+    const searchClause = search ? 'AND (name LIKE ? OR phone_number LIKE ?)' : ''
+    const params: Array<string | number> = [ownerNumber]
+    if (search) {
+      const like = `%${search}%`
+      params.push(like, like)
+    }
     return (
       (await oxmysql.scalar_async(
-        `SELECT COUNT(*) FROM teke_phone_contacts WHERE owner_number = ? ${favClause}`,
-        [ownerNumber],
+        `SELECT COUNT(*) FROM teke_phone_contacts WHERE owner_number = ? ${favClause} ${searchClause}`,
+        params,
       )) ?? 0
     )
   },
 
-  // Tek numara icin rehber ismi (thread basligi / arama listesi icin).
   async nameOf(ownerNumber: string, phoneNumber: string): Promise<string | null> {
     return (
       (await oxmysql.scalar_async(

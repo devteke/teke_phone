@@ -1,33 +1,37 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import * as api from '../api/contacts'
-import type { Contact } from '../types'
 
-const KEY = ['contacts']
+export const CONTACTS_PAGE = 7
 
-export function useContacts() {
-  return useQuery({ queryKey: KEY, queryFn: api.getContacts })
+export function useContactsPage(favoritesOnly: boolean, search: string, page: number, enabled = true) {
+  return useQuery({
+    queryKey: ['contacts', favoritesOnly, search, page],
+    queryFn: () => api.getContacts(page * CONTACTS_PAGE, CONTACTS_PAGE, favoritesOnly, search),
+    placeholderData: keepPreviousData,
+    enabled,
+  })
 }
 
 export function useSaveContact() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (input: { name: string; phoneNumber: string }) => api.saveContact(input),
-    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['contacts'] })
+      void qc.invalidateQueries({ queryKey: ['conversations'] })
+      void qc.invalidateQueries({ queryKey: ['calls'] })
+    },
   })
 }
 
 export function useDeleteContact() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (c: { id: number; phoneNumber: string }) => api.deleteContact(c.id),
-    onMutate: async (c) => {
-      await qc.cancelQueries({ queryKey: KEY })
-      const prev = qc.getQueryData<Contact[]>(KEY)
-      qc.setQueryData<Contact[]>(KEY, (old) => old?.filter((x) => x.id !== c.id))
-      return { prev }
-    },
-    onError: (_e, _v, ctx) => {
-      if (ctx?.prev) qc.setQueryData(KEY, ctx.prev)
+    mutationFn: (c: { id: number }) => api.deleteContact(c.id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['contacts'] })
+      void qc.invalidateQueries({ queryKey: ['conversations'] })
+      void qc.invalidateQueries({ queryKey: ['calls'] })
     },
   })
 }
@@ -36,16 +40,6 @@ export function useSetFavorite() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (input: { id: number; favorite: boolean }) => api.setFavorite(input.id, input.favorite),
-    onMutate: async (input) => {
-      await qc.cancelQueries({ queryKey: KEY })
-      const prev = qc.getQueryData<Contact[]>(KEY)
-      qc.setQueryData<Contact[]>(KEY, (old) =>
-        old?.map((c) => (c.id === input.id ? { ...c, favorite: input.favorite } : c)),
-      )
-      return { prev }
-    },
-    onError: (_e, _v, ctx) => {
-      if (ctx?.prev) qc.setQueryData(KEY, ctx.prev)
-    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['contacts'] }),
   })
 }

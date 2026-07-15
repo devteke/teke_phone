@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { AppHeader } from '../../components/AppHeader'
-import { useResolveName } from '../../hooks/useContactName'
 import { useConversations } from '../../hooks/useMessages'
 import type { Conversation } from '../../types'
 
@@ -20,7 +19,6 @@ function avatarStyle(seed: string) {
 
 export function MessagesScreen() {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useConversations()
-  const resolveName = useResolveName()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [q, setQ] = useState('')
   const query = q.trim().toLocaleLowerCase('tr-TR')
@@ -45,15 +43,13 @@ export function MessagesScreen() {
 
   const filtered = useMemo(() => {
     if (!query) return conversations
-    return conversations.filter((c) => {
-      const name = resolveName(c.phoneNumber).toLocaleLowerCase('tr-TR')
-      return (
-        name.includes(query) ||
+    return conversations.filter(
+      (c) =>
+        c.displayName.toLocaleLowerCase('tr-TR').includes(query) ||
         c.phoneNumber.toLowerCase().includes(query) ||
-        c.lastMessage.toLocaleLowerCase('tr-TR').includes(query)
-      )
-    })
-  }, [conversations, query, resolveName])
+        c.lastMessage.toLocaleLowerCase('tr-TR').includes(query),
+    )
+  }, [conversations, query])
 
   const onScroll = () => {
     if (query) return // arama modunda otomatik yukluyoruz
@@ -77,19 +73,16 @@ export function MessagesScreen() {
         {!isLoading && filtered.length === 0 && (
           <p className="muted">{query ? 'Sonuc yok' : 'Henuz mesaj yok'}</p>
         )}
-        {filtered.map((c) => {
-          const name = resolveName(c.phoneNumber)
-          return (
-            <Link key={c.phoneNumber} to="/messages/$partner" params={{ partner: c.phoneNumber }} className="row">
-              <div className="avatar" style={avatarStyle(name)}>{initials(name)}</div>
-              <div className="row__main">
-                <span className="row__title">{name}</span>
-                <span className="row__sub">{c.lastMessage}</span>
-              </div>
-              {c.unread > 0 && <span className="badge">{c.unread}</span>}
-            </Link>
-          )
-        })}
+        {filtered.map((c) => (
+          <Link key={c.phoneNumber} to="/messages/$partner" params= {{partner: c.phoneNumber}}  className="row">
+            <div className="avatar" style={avatarStyle(c.displayName)}>{initials(c.displayName)}</div>
+            <div className="row__main">
+              <span className="row__title">{c.displayName}</span>
+              <span className="row__sub">{c.lastMessage}</span>
+            </div>
+            {c.unread > 0 && <span className="badge">{c.unread}</span>}
+          </Link>
+        ))}
         {!query && isFetchingNextPage && <p className="muted">Yukleniyor...</p>}
       </div>
     </div>

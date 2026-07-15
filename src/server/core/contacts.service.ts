@@ -9,12 +9,13 @@ export const contactsService = {
   async list(
     ownerNumber: string,
     favoritesOnly: boolean,
+    search: string,
     limit: number,
     offset: number,
   ): Promise<PagedList<Contact>> {
     const [rows, total] = await Promise.all([
-      contactsRepo.listPage(ownerNumber, favoritesOnly, limit, offset),
-      contactsRepo.count(ownerNumber, favoritesOnly),
+      contactsRepo.listPage(ownerNumber, favoritesOnly, search, limit, offset),
+      contactsRepo.count(ownerNumber, favoritesOnly, search),
     ])
     return { items: rows.map(toContact), total }
   },

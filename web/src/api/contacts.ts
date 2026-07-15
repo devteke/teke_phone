@@ -1,7 +1,8 @@
 import { fetchNui } from '../lib/fetchNui'
-import type { Contact } from '../types'
+import type { Contact, PagedList } from '../types'
 
-export const getContacts = () => fetchNui<Contact[]>('getContacts')
+export const getContacts = (offset: number, limit: number, favoritesOnly = false, search = '') =>
+  fetchNui<PagedList<Contact>>('getContacts', { offset, limit, favoritesOnly, search })
 
 export const saveContact = (input: { name: string; phoneNumber: string }) =>
   fetchNui('saveContact', input)

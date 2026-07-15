@@ -12,7 +12,6 @@ export interface Contact {
   phoneNumber: string
   favorite: boolean
 }
-
 export interface Conversation {
   phoneNumber: string
   displayName: string
@@ -20,7 +19,6 @@ export interface Conversation {
   lastTime: string
   unread: number
 }
-
 export interface Message {
   id: number
   senderNumber: string
@@ -28,4 +26,18 @@ export interface Message {
   content: string
   createdAt: string
   isMine: boolean
+}
+export interface Thread extends Page<Message> {
+  partnerName: string
+}
+export type CallDirection = 'incoming' | 'outgoing'
+export type CallStatus = 'answered' | 'missed' | 'rejected'
+export interface Call {
+  id: number
+  partnerNumber: string
+  partnerName: string
+  direction: CallDirection
+  status: CallStatus
+  duration: number
+  createdAt: string
 }

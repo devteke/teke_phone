@@ -7,11 +7,11 @@ import {
   type QueryClient,
 } from '@tanstack/react-query'
 import * as api from '../api/messages'
-import type { Conversation, Message, Page } from '../types'
+import type { Conversation, Message, Page, Thread } from '../types'
 
 const MESSAGE_PAGE = 20
 const CONV_PAGE = 15
-type ThreadCache = InfiniteData<Page<Message>, number>
+type ThreadCache = InfiniteData<Thread, number>
 type ConvCache = InfiniteData<Page<Conversation>, number>
 
 export function useConversations() {

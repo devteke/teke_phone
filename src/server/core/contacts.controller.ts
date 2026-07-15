@@ -9,13 +9,14 @@ export function registerContactCallbacks(): void {
     Events.getContacts,
     async (
       source: number,
-      payload: { offset?: number; limit?: number; favoritesOnly?: boolean },
+      payload: { offset?: number; limit?: number; favoritesOnly?: boolean; search?: string },
     ): Promise<PagedList<Contact>> => {
       const me = await resolveIdentity(source)
       if (!me) return { items: [], total: 0 }
-      const limit = Math.min(Math.max(payload?.limit ?? 10, 1), 50)
+      const limit = Math.min(Math.max(payload?.limit ?? 7, 1), 50)
       const offset = Math.max(payload?.offset ?? 0, 0)
-      return contactsService.list(me.phoneNumber, !!payload?.favoritesOnly, limit, offset)
+      const search = (payload?.search ?? '').trim()
+      return contactsService.list(me.phoneNumber, !!payload?.favoritesOnly, search, limit, offset)
     },
   )
 
